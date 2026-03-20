@@ -5,8 +5,7 @@ Version: 0.1.0
 Date: 2026-03-20
 Authors@R: person("Se-Kang", "Kim",
     email = "se-kang.kim@bcm.edu",
-    role  = c("aut", "cre"),
-    comment = c(ORCID = "0000-0000-0000-0000"))
+    role  = c("aut", "cre"))
 Description: Implements Factor Analytic Profile Analysis of Ipsatized Data
     (FAPA), a metric inferential framework for pattern detection and
     person-level reconstruction in multivariate profile data.  After
