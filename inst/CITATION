@@ -1,0 +1,21 @@
+citHeader("To cite FAPA in publications, please use:")
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "FAPA: Factor Analytic Profile Analysis of Ipsatized Data",
+  author   = person("Se-Kang", "Kim",
+                    email = "se-kang.kim@bcm.edu"),
+  year     = "2026",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/sekangakim/FAPA"
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "Factorization of person response profiles to identify
+              summative profiles carrying central response patterns",
+  author   = person("Se-Kang", "Kim"),
+  journal  = "Psychological Methods",
+  year     = "2023",
+  doi      = "10.1037/met0000568"
+)

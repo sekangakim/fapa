@@ -1,0 +1,191 @@
+---
+title: "FAPA: A complete worked example"
+author: "Se-Kang Kim"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{FAPA: A complete worked example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 7,
+  fig.height = 4
+)
+```
+
+## Overview
+
+This vignette demonstrates the complete FAPA workflow using a pre-treatment /
+post-treatment Eating Disorder Inventory-2 (EDI-2) dataset.  The data comprise
+2,599 clinical cases, each described by 22 subscale scores (11 pre-treatment
++ 11 post-treatment administrations of the 11 EDI-2 subscales: Drive for
+Thinness, Bulimia, Body Dissatisfaction, Ineffectiveness, Perfectionism,
+Interpersonal Distrust, Interoceptive Awareness, Maturity Fears, Asceticism,
+Impulse Regulation, and Social Insecurity).
+
+```{r packages}
+library(FAPA)
+```
+
+---
+
+## 1. User settings
+
+```{r settings}
+## ---- paths and labels -------------------------------------------------------
+data_path <- "Calibration.csv"   # replace with your own path
+out_prefix <- "fapa"
+
+## ---- analysis parameters ----------------------------------------------------
+seed         <- 1
+B_boot       <- 2000
+alpha        <- 0.05
+angle_thresh <- 30     # Stage 2: principal angle stability bound (degrees)
+cc_thresh    <- 0.85   # Stage 3: Tucker CC acceptability lower bound
+K_extra      <- 3      # extra dimensions beyond K_pa for verification contrast
+participants <- 1:5    # row IDs for individual-level bootstrap inference
+
+## ---- EDI-2 variable labels --------------------------------------------------
+edi_tags      <- c("Dt","Bu","Bd","In","Pf","Id","Ia","Mf","As","Ir","Si")
+before_labels <- paste0("Before_",  1:11, "_", edi_tags)
+after_labels  <- paste0("After_",  12:22, "_", edi_tags)
+testname      <- c(before_labels, after_labels)
+```
+
+---
+
+## 2. Load data and ipsatize
+
+```{r load, eval = FALSE}
+dat    <- load_and_ipsatize(data_path, col_labels = testname)
+raw    <- dat$raw
+Xtilde <- dat$ipsatized
+message(sprintf("%d persons x %d variables", nrow(Xtilde), ncol(Xtilde)))
+```
+
+---
+
+## 3. Stage 1 — Horn's Parallel Analysis
+
+Variance-matched parallel analysis determines the number of components to
+retain.  Random matrices are row-centred and rescaled to the same Frobenius
+norm as `Xtilde` before comparison, ensuring the null distribution is
+appropriate for ipsatized data.
+
+```{r stage1, eval = FALSE}
+set.seed(seed)
+pa_result <- fapa_pa(Xtilde, B = B_boot, alpha = alpha, seed = seed)
+print_pa(pa_result)
+plot_pa_scree(pa_result)
+
+K_pa     <- pa_result$n_retain
+K_max    <- length(pa_result$obs_sv2)
+K_report <- min(K_pa + K_extra, K_max)
+```
+
+---
+
+## 4. Core FAPA solution
+
+```{r core, eval = FALSE}
+fit_fapa <- fapa_core(Xtilde, K = K_pa)
+
+cat(sprintf("Total ipsatized variance : %.2f\n", fit_fapa$total_var))
+cat("Proportion explained     :",
+    paste(round(fit_fapa$prop_var, 4), collapse = "  "), "\n")
+cat("Cumulative proportion    :",
+    paste(round(fit_fapa$cum_var,  4), collapse = "  "), "\n")
+```
+
+---
+
+## 5. Stage 2 — Procrustes / principal angles
+
+For each of B bootstrap resamples, the K principal angles between the
+bootstrap and original right singular vector subspaces are computed.  All
+angles must fall below `angle_thresh` for a replicate to be declared stable.
+
+```{r stage2, eval = FALSE}
+pr_result <- fapa_procrustes(Xtilde, K = K_report, B = B_boot,
+                              angle_thresh = angle_thresh, seed = seed)
+print_procrustes(pr_result, K_pa = K_pa)
+plot_principal_angles(pr_result)
+```
+
+---
+
+## 6. Stage 3 — Tucker's congruence coefficients
+
+Tucker's CC is computed between each original core profile and its
+bootstrap counterpart, with sign ambiguity resolved by maximising the
+absolute CC before storage.
+
+```{r stage3, eval = FALSE}
+tc_result <- fapa_tucker(Xtilde, K = K_report, B = B_boot,
+                          cc_thresh = cc_thresh, seed = seed)
+print_tucker(tc_result, cc_thresh = cc_thresh, K_pa = K_pa)
+plot_tucker_cc(tc_result, cc_thresh = cc_thresh)
+```
+
+---
+
+## 7. BCa confidence intervals for core profiles
+
+```{r bca, eval = FALSE}
+bca_result <- fapa_bca(Xtilde, K = K_pa, B = B_boot,
+                        alpha = alpha, seed = seed)
+
+## Plot each retained core profile
+for (k in seq_len(K_pa))
+  plot_fapa_core(bca_result, i = k, split_at = 11)
+
+## Person overlay for participant 1
+if (K_pa >= 2)
+  plot_person_match(bca_result, Xtilde, p = 1, K = min(2, K_pa))
+```
+
+---
+
+## 8. Person-level reconstruction
+
+```{r person, eval = FALSE}
+person_result <- fapa_person(Xtilde, fit_fapa,
+                              participants = participants,
+                              B_boot = B_boot, alpha = alpha, seed = seed)
+
+cat(sprintf("Mean person R² : %.4f\n", person_result$R2_mean))
+```
+
+---
+
+## 9. Sanity check and output
+
+```{r output, eval = FALSE}
+## Correlation of CP1 with subscale grand means
+cp1           <- fit_fapa$X[, 1]
+cor_cp1_means <- cor(colMeans(raw), cp1)
+message(sprintf("cor(grand means, CP1) = %.3f", cor_cp1_means))
+if (abs(cor_cp1_means) > 0.70)
+  message("NOTE: CP1 may reflect the normative symptom gradient.")
+
+## Write CSVs
+write_fapa_results(bca_result, prefix = out_prefix)
+write_verification(pa_result, pr_result, tc_result,
+                   prefix = out_prefix, K_pa = K_pa)
+write.csv(person_result$weights,
+          file = paste0(out_prefix, "_PersonWeights.csv"),
+          row.names = FALSE)
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```
