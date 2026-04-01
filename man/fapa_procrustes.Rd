@@ -7,23 +7,29 @@
 fapa_procrustes(Xtilde, K, B = 2000, angle_thresh = 30, seed = NULL)
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{K}{Integer. Number of dimensions to assess.}
 
-\item{B}{Integer. Number of bootstrap replicates. Default \code{2000}.}
+\item{B}{Integer. Number of bootstrap replicates. Default
+\code{2000}.}
 
-\item{angle_thresh}{Numeric. Upper stability bound in degrees. Default \code{30}.}
+\item{angle_thresh}{Numeric. Upper stability bound in degrees. Default
+\code{30}.}
 
 \item{seed}{Integer or \code{NULL}. Random seed.}
 }
 \value{
 A named list:
   \describe{
-    \item{angles_mat}{B × K matrix of principal angles (degrees).}
+    \item{angles_mat}{\eqn{B \times K} matrix of principal angles
+      (degrees).}
     \item{angle_mean, angle_sd}{Per-dimension mean and SD of angles.}
-    \item{angle_q025, angle_q975}{Per-dimension 2.5th and 97.5th percentiles.}
-    \item{n_stable}{Number of replicates satisfying the stability criterion.}
+    \item{angle_q025, angle_q975}{Per-dimension 2.5th and 97.5th
+      percentiles.}
+    \item{n_stable}{Number of replicates satisfying the stability
+      criterion.}
     \item{prop_stable}{Proportion of stable replicates.}
     \item{angle_thresh, K, B}{Inputs echoed for reporting.}
   }
@@ -41,7 +47,7 @@ This criterion confirms that the bootstrap subspace is nearly parallel to
 the original, providing geometric evidence of dimensional stability.
 }
 \references{
-Björck, Å., & Golub, G. H. (1973). Numerical methods for computing angles
+Bjorck, A., & Golub, G. H. (1973). Numerical methods for computing angles
 between linear subspaces. \emph{Mathematics of Computation, 27}(123),
 579--594.
 }

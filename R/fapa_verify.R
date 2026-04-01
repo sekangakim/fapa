@@ -1,9 +1,9 @@
 # =============================================================================
 # fapa_verify.R
 # Three-stage bootstrap verification framework:
-#   Stage 1 – Horn's parallel analysis        (dimensionality)
-#   Stage 2 – Procrustes / principal angles   (subspace stability)
-#   Stage 3 – Tucker's congruence coefficient (profile replicability)
+#   Stage 1 - Horn's parallel analysis        (dimensionality)
+#   Stage 2 - Procrustes / principal angles   (subspace stability)
+#   Stage 3 - Tucker's congruence coefficient (profile replicability)
 # =============================================================================
 
 
@@ -43,7 +43,7 @@ tucker_cc <- function(x, y) {
 
 
 # -----------------------------------------------------------------------------
-# Stage 1 – Horn's Parallel Analysis
+# Stage 1 - Horn's Parallel Analysis
 # -----------------------------------------------------------------------------
 
 #' Stage 1: Horn's Parallel Analysis (variance-matched bootstrap)
@@ -60,7 +60,8 @@ tucker_cc <- function(x, y) {
 #' exceeds the \eqn{(1-\alpha)} quantile of the matched null distribution are
 #' retained.
 #'
-#' @param Xtilde Numeric matrix (persons × variables), already ipsatized.
+#' @param Xtilde Numeric matrix (persons \eqn{\times} variables), already
+#'   ipsatized.
 #' @param B      Integer. Number of bootstrap replicates. Default \code{2000}.
 #' @param alpha  Numeric. Significance level. Default \code{0.05}.
 #' @param seed   Integer or \code{NULL}. Random seed for reproducibility.
@@ -68,11 +69,13 @@ tucker_cc <- function(x, y) {
 #' @return A named list:
 #'   \describe{
 #'     \item{n_retain}{Number of components retained.}
-#'     \item{obs_sv2}{Observed squared singular values (length = \eqn{K_{\max}}).}
+#'     \item{obs_sv2}{Observed squared singular values (length =
+#'       \eqn{K_{\max}}).}
 #'     \item{thresh}{Bootstrap \eqn{(1-\alpha)} quantile per component.}
 #'     \item{prop_obs}{Proportion of variance per observed component.}
 #'     \item{prop_rand}{Mean proportion of variance per random component.}
-#'     \item{rand_sv2}{Full \eqn{B \times K_{\max}} matrix of random \eqn{\sigma^2}.}
+#'     \item{rand_sv2}{Full \eqn{B \times K_{\max}} matrix of random
+#'       \eqn{\sigma^2}.}
 #'     \item{total_var}{Total ipsatized variance.}
 #'     \item{alpha, B}{Inputs echoed for reporting.}
 #'   }
@@ -94,13 +97,13 @@ fapa_pa <- function(Xtilde, B = 2000, alpha = 0.05, seed = NULL) {
 
   rand_sv2 <- matrix(0, B, K_max)
   for (b in seq_len(B)) {
-    Xr <- matrix(rnorm(P * I), P, I)
+    Xr <- matrix(stats::rnorm(P * I), P, I)
     Xr <- Xr - rowMeans(Xr)                           # ipsatize
     Xr <- Xr * sqrt(total_var / sum(Xr^2))            # variance-match
     rand_sv2[b, ] <- svd(Xr, nu = 0, nv = 0)$d[seq_len(K_max)]^2
   }
 
-  thresh   <- apply(rand_sv2, 2, quantile, probs = 1 - alpha)
+  thresh   <- apply(rand_sv2, 2, stats::quantile, probs = 1 - alpha)
   n_retain <- sum(obs_sv2 > thresh)
   if (n_retain == 0L) {
     warning("PA retained 0 components. Check data scaling or reduce alpha.")
@@ -144,7 +147,7 @@ print_pa <- function(pa) {
 
 
 # -----------------------------------------------------------------------------
-# Stage 2 – Procrustes / Principal Angles
+# Stage 2 - Procrustes / Principal Angles
 # -----------------------------------------------------------------------------
 
 #' Stage 2: Procrustes stability via principal angles
@@ -159,24 +162,30 @@ print_pa <- function(pa) {
 #' This criterion confirms that the bootstrap subspace is nearly parallel to
 #' the original, providing geometric evidence of dimensional stability.
 #'
-#' @param Xtilde       Numeric matrix (persons × variables), already ipsatized.
+#' @param Xtilde       Numeric matrix (persons \eqn{\times} variables), already
+#'   ipsatized.
 #' @param K            Integer. Number of dimensions to assess.
-#' @param B            Integer. Number of bootstrap replicates. Default \code{2000}.
-#' @param angle_thresh Numeric. Upper stability bound in degrees. Default \code{30}.
+#' @param B            Integer. Number of bootstrap replicates. Default
+#'   \code{2000}.
+#' @param angle_thresh Numeric. Upper stability bound in degrees. Default
+#'   \code{30}.
 #' @param seed         Integer or \code{NULL}. Random seed.
 #'
 #' @return A named list:
 #'   \describe{
-#'     \item{angles_mat}{B × K matrix of principal angles (degrees).}
+#'     \item{angles_mat}{\eqn{B \times K} matrix of principal angles
+#'       (degrees).}
 #'     \item{angle_mean, angle_sd}{Per-dimension mean and SD of angles.}
-#'     \item{angle_q025, angle_q975}{Per-dimension 2.5th and 97.5th percentiles.}
-#'     \item{n_stable}{Number of replicates satisfying the stability criterion.}
+#'     \item{angle_q025, angle_q975}{Per-dimension 2.5th and 97.5th
+#'       percentiles.}
+#'     \item{n_stable}{Number of replicates satisfying the stability
+#'       criterion.}
 #'     \item{prop_stable}{Proportion of stable replicates.}
 #'     \item{angle_thresh, K, B}{Inputs echoed for reporting.}
 #'   }
 #'
 #' @references
-#' Björck, Å., & Golub, G. H. (1973). Numerical methods for computing angles
+#' Bjorck, A., & Golub, G. H. (1973). Numerical methods for computing angles
 #' between linear subspaces. \emph{Mathematics of Computation, 27}(123),
 #' 579--594.
 #'
@@ -187,7 +196,7 @@ fapa_procrustes <- function(Xtilde, K, B = 2000,
                              angle_thresh = 30, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
   n  <- nrow(Xtilde)
-  V0 <- svd(Xtilde, nu = 0, nv = K)$v          # I × K original subspace
+  V0 <- svd(Xtilde, nu = 0, nv = K)$v          # I x K original subspace
 
   angles_mat <- matrix(NA_real_, B, K)
   n_stable   <- 0L
@@ -202,9 +211,9 @@ fapa_procrustes <- function(Xtilde, K, B = 2000,
 
   list(angles_mat   = angles_mat,
        angle_mean   = colMeans(angles_mat),
-       angle_sd     = apply(angles_mat, 2, sd),
-       angle_q025   = apply(angles_mat, 2, quantile, 0.025),
-       angle_q975   = apply(angles_mat, 2, quantile, 0.975),
+       angle_sd     = apply(angles_mat, 2, stats::sd),
+       angle_q025   = apply(angles_mat, 2, stats::quantile, 0.025),
+       angle_q975   = apply(angles_mat, 2, stats::quantile, 0.975),
        n_stable     = n_stable,
        prop_stable  = n_stable / B,
        angle_thresh = angle_thresh,
@@ -243,7 +252,7 @@ print_procrustes <- function(pr, K_pa = NULL) {
 
 
 # -----------------------------------------------------------------------------
-# Stage 3 – Tucker's Congruence Coefficients
+# Stage 3 - Tucker's Congruence Coefficients
 # -----------------------------------------------------------------------------
 
 #' Stage 3: Profile replicability via Tucker's congruence coefficients
@@ -260,15 +269,17 @@ print_procrustes <- function(pr, K_pa = NULL) {
 #'   \item CC \eqn{<} 0.85: poor similarity.
 #' }
 #'
-#' @param Xtilde    Numeric matrix (persons × variables), already ipsatized.
+#' @param Xtilde    Numeric matrix (persons \eqn{\times} variables), already
+#'   ipsatized.
 #' @param K         Integer. Number of core profiles to assess.
-#' @param B         Integer. Number of bootstrap replicates. Default \code{2000}.
+#' @param B         Integer. Number of bootstrap replicates. Default
+#'   \code{2000}.
 #' @param cc_thresh Numeric. Acceptability lower bound. Default \code{0.85}.
 #' @param seed      Integer or \code{NULL}. Random seed.
 #'
 #' @return A named list:
 #'   \describe{
-#'     \item{cc_mat}{B × K matrix of Tucker CCs.}
+#'     \item{cc_mat}{\eqn{B \times K} matrix of Tucker CCs.}
 #'     \item{cc_mean, cc_sd}{Per-profile mean and SD of CCs.}
 #'     \item{cc_q025, cc_q975}{Per-profile 2.5th and 97.5th percentiles.}
 #'     \item{cc_thresh, K, B}{Inputs echoed for reporting.}
@@ -291,7 +302,7 @@ fapa_tucker <- function(Xtilde, K, B = 2000,
   if (!is.null(seed)) set.seed(seed)
   n    <- nrow(Xtilde)
   fit0 <- fapa_core(Xtilde, K)
-  X0   <- fit0$X                              # I × K original core profiles
+  X0   <- fit0$X                              # I x K original core profiles
 
   cc_mat <- matrix(NA_real_, B, K)
 
@@ -306,10 +317,12 @@ fapa_tucker <- function(Xtilde, K, B = 2000,
   }
 
   list(cc_mat    = cc_mat,
-       cc_mean   = colMeans(cc_mat, na.rm = TRUE),
-       cc_sd     = apply(cc_mat, 2, sd,       na.rm = TRUE),
-       cc_q025   = apply(cc_mat, 2, quantile, 0.025, na.rm = TRUE),
-       cc_q975   = apply(cc_mat, 2, quantile, 0.975, na.rm = TRUE),
+       cc_mean   = colMeans(cc_mat,                     na.rm = TRUE),
+       cc_sd     = apply(cc_mat, 2, stats::sd,          na.rm = TRUE),
+       cc_q025   = apply(cc_mat, 2, stats::quantile,
+                         0.025,                         na.rm = TRUE),
+       cc_q975   = apply(cc_mat, 2, stats::quantile,
+                         0.975,                         na.rm = TRUE),
        cc_thresh = cc_thresh,
        K = K, B = B)
 }

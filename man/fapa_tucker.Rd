@@ -7,11 +7,13 @@
 fapa_tucker(Xtilde, K, B = 2000, cc_thresh = 0.85, seed = NULL)
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{K}{Integer. Number of core profiles to assess.}
 
-\item{B}{Integer. Number of bootstrap replicates. Default \code{2000}.}
+\item{B}{Integer. Number of bootstrap replicates. Default
+\code{2000}.}
 
 \item{cc_thresh}{Numeric. Acceptability lower bound. Default \code{0.85}.}
 
@@ -20,7 +22,7 @@ fapa_tucker(Xtilde, K, B = 2000, cc_thresh = 0.85, seed = NULL)
 \value{
 A named list:
   \describe{
-    \item{cc_mat}{B × K matrix of Tucker CCs.}
+    \item{cc_mat}{\eqn{B \times K} matrix of Tucker CCs.}
     \item{cc_mean, cc_sd}{Per-profile mean and SD of CCs.}
     \item{cc_q025, cc_q975}{Per-profile 2.5th and 97.5th percentiles.}
     \item{cc_thresh, K, B}{Inputs echoed for reporting.}

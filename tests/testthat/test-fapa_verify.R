@@ -81,15 +81,20 @@ test_that("fapa_tucker CCs are in [-1, 1]", {
 })
 
 test_that("fapa_tucker mean CCs are high for stable data", {
-  ## With n=200 and strong signal, CCs should exceed 0.90
-  set.seed(5)
-  P <- 200;  I <- 10
-  ## Construct data with 2 clear components
-  U  <- matrix(rnorm(P * 2), P, 2)
-  V  <- matrix(rnorm(I * 2), I, 2)
-  Xtilde <- U %*% t(V) + matrix(rnorm(P * I, sd = 0.2), P, I)
+  ## Key design: force V columns to be mean-zero so the 2-component signal
+  ## survives row-centering (ipsatization) exactly.
+  ## When colMeans(V) == 0, rowMeans(U %*% t(V)) == 0 for every person,
+  ## so ipsatization leaves the signal unchanged and CCs are reliably high.
+  set.seed(99)
+  P <- 300;  I <- 10
+  V <- matrix(rnorm(I * 2), I, 2)
+  V <- scale(V, center = TRUE, scale = FALSE)   # force mean-zero columns
+  U <- matrix(rnorm(P * 2), P, 2)
+  signal <- U %*% t(V)
+  noise  <- matrix(rnorm(P * I, sd = 0.15), P, I)
+  Xtilde <- signal + noise
   Xtilde <- Xtilde - rowMeans(Xtilde)
 
-  tc <- fapa_tucker(Xtilde, K = 2, B = 100, seed = 1)
+  tc <- fapa_tucker(Xtilde, K = 2, B = 200, seed = 1)
   expect_true(all(tc$cc_mean > 0.90))
 })

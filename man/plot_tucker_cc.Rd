@@ -9,7 +9,8 @@ plot_tucker_cc(tc, cc_thresh = 0.85)
 \arguments{
 \item{tc}{A list returned by \code{\link{fapa_tucker}}.}
 
-\item{cc_thresh}{Numeric. Fair-similarity reference line. Default \code{0.85}.}
+\item{cc_thresh}{Numeric. Fair-similarity reference line. Default
+\code{0.85}.}
 }
 \value{
 Invisibly returns \code{NULL}.

@@ -22,7 +22,7 @@ write_fapa_results <- function(bca, prefix) {
     fname <- paste0(prefix, "_CoreProfile", k, ".csv")
     df    <- bca$ci[[k]]
     rownames(df) <- bca$varnames
-    write.csv(df, file = fname)
+    utils::write.csv(df, file = fname)
     message("Wrote: ", fname)
     paths[k] <- fname
   }
@@ -47,7 +47,7 @@ write_verification <- function(pa, pr, tc, prefix, K_pa = NULL) {
 
   ## Stage 1
   f1 <- paste0(prefix, "_Stage1_PA.csv")
-  write.csv(
+  utils::write.csv(
     data.frame(Component    = seq_along(pa$obs_sv2),
                Obs_sv2      = pa$obs_sv2,
                Obs_PropVar  = pa$prop_obs,
@@ -67,7 +67,7 @@ write_verification <- function(pa, pr, tc, prefix, K_pa = NULL) {
                     Prop_stable = pr$prop_stable)
   if (!is.null(K_pa))
     df2$PA_Retained <- seq_len(pr$K) <= K_pa
-  write.csv(df2, file = f2, row.names = FALSE)
+  utils::write.csv(df2, file = f2, row.names = FALSE)
 
   ## Stage 3
   f3  <- paste0(prefix, "_Stage3_TuckerCC.csv")
@@ -79,7 +79,7 @@ write_verification <- function(pa, pr, tc, prefix, K_pa = NULL) {
                     CC_OK        = tc$cc_mean >= tc$cc_thresh)
   if (!is.null(K_pa))
     df3$PA_Retained <- seq_len(tc$K) <= K_pa
-  write.csv(df3, file = f3, row.names = FALSE)
+  utils::write.csv(df3, file = f3, row.names = FALSE)
 
   message("Verification results written to: ", f1, ", ", f2, ", ", f3)
   invisible(c(Stage1 = f1, Stage2 = f2, Stage3 = f3))

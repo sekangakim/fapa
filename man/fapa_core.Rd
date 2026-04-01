@@ -7,7 +7,8 @@
 fapa_core(Xtilde, K, direction = NULL)
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{K}{Integer. Number of components to extract.}
 
@@ -27,7 +28,7 @@ A named list:
     \item{var_k}{Variance per component (\eqn{\sigma_k^2}).}
     \item{prop_var}{Proportion of variance per component.}
     \item{cum_var}{Cumulative proportion of variance.}
-    \item{person_cor}{Normalised person–core correlations (\eqn{P \times K}).}
+    \item{person_cor}{Normalised person-core correlations (\eqn{P \times K}).}
     \item{direction}{Sign vector applied (for reproducibility).}
     \item{K}{Number of components extracted.}
   }
@@ -48,7 +49,8 @@ Signs of the singular vectors are normalised so that the element with the
 largest absolute value in each core-profile column is positive.
 }
 \references{
-Kim, S.-K. (2023). Factorization of person response profiles to identify
+Kim, S.-K. (2024). Factorization of person response profiles to identify
 summative profiles carrying central response patterns.
-\emph{Psychological Methods}. \doi{10.1037/met0000568}
+\emph{Psychological Methods, 29}(4), 723--730.
+\doi{10.1037/met0000568}
 }

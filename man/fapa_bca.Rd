@@ -7,7 +7,8 @@
 fapa_bca(Xtilde, K, B = 2000, alpha = 0.05, seed = NULL)
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{K}{Integer. Number of core profiles (must equal the retained
 dimensionality from \code{\link{fapa_pa}}).}
@@ -26,7 +27,8 @@ A named list:
       \code{Upper}, \code{BCaLower}, \code{BCaUpper}.}
     \item{X0}{Original core-profile matrix (\eqn{I \times K}).}
     \item{boot_out}{The full \code{boot} object for downstream diagnostics.}
-    \item{boot_X}{3-D array (\eqn{B \times I \times K}) of bootstrap profiles.}
+    \item{boot_X}{3-D array (\eqn{B \times I \times K}) of bootstrap
+      profiles.}
     \item{K, B, alpha, varnames}{Inputs echoed for plotting and output.}
   }
 }

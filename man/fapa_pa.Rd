@@ -7,7 +7,8 @@
 fapa_pa(Xtilde, B = 2000, alpha = 0.05, seed = NULL)
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{B}{Integer. Number of bootstrap replicates. Default \code{2000}.}
 
@@ -19,11 +20,13 @@ fapa_pa(Xtilde, B = 2000, alpha = 0.05, seed = NULL)
 A named list:
   \describe{
     \item{n_retain}{Number of components retained.}
-    \item{obs_sv2}{Observed squared singular values (length = \eqn{K_{\max}}).}
+    \item{obs_sv2}{Observed squared singular values (length =
+      \eqn{K_{\max}}).}
     \item{thresh}{Bootstrap \eqn{(1-\alpha)} quantile per component.}
     \item{prop_obs}{Proportion of variance per observed component.}
     \item{prop_rand}{Mean proportion of variance per random component.}
-    \item{rand_sv2}{Full \eqn{B \times K_{\max}} matrix of random \eqn{\sigma^2}.}
+    \item{rand_sv2}{Full \eqn{B \times K_{\max}} matrix of random
+      \eqn{\sigma^2}.}
     \item{total_var}{Total ipsatized variance.}
     \item{alpha, B}{Inputs echoed for reporting.}
   }

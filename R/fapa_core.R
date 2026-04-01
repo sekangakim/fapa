@@ -29,7 +29,7 @@
 #'
 #' @export
 load_and_ipsatize <- function(path, col_labels) {
-  dat <- read.csv(path, header = TRUE, check.names = FALSE)
+  dat <- utils::read.csv(path, header = TRUE, check.names = FALSE)
   if (ncol(dat) != length(col_labels))
     stop(sprintf("Expected %d columns, got %d.", length(col_labels), ncol(dat)))
   colnames(dat) <- col_labels
@@ -57,7 +57,8 @@ load_and_ipsatize <- function(path, col_labels) {
 #' Signs of the singular vectors are normalised so that the element with the
 #' largest absolute value in each core-profile column is positive.
 #'
-#' @param Xtilde   Numeric matrix (persons × variables), already ipsatized.
+#' @param Xtilde   Numeric matrix (persons \eqn{\times} variables), already
+#'   ipsatized.
 #' @param K        Integer. Number of components to extract.
 #' @param direction Integer vector of length \eqn{K} with values \eqn{\pm 1},
 #'   overriding the automatic sign convention.  \code{NULL} (default) triggers
@@ -74,25 +75,26 @@ load_and_ipsatize <- function(path, col_labels) {
 #'     \item{var_k}{Variance per component (\eqn{\sigma_k^2}).}
 #'     \item{prop_var}{Proportion of variance per component.}
 #'     \item{cum_var}{Cumulative proportion of variance.}
-#'     \item{person_cor}{Normalised person–core correlations (\eqn{P \times K}).}
+#'     \item{person_cor}{Normalised person-core correlations (\eqn{P \times K}).}
 #'     \item{direction}{Sign vector applied (for reproducibility).}
 #'     \item{K}{Number of components extracted.}
 #'   }
 #'
 #' @references
-#' Kim, S.-K. (2023). Factorization of person response profiles to identify
+#' Kim, S.-K. (2024). Factorization of person response profiles to identify
 #' summative profiles carrying central response patterns.
-#' \emph{Psychological Methods}. \doi{10.1037/met0000568}
+#' \emph{Psychological Methods, 29}(4), 723--730.
+#' \doi{10.1037/met0000568}
 #'
 #' @export
 fapa_core <- function(Xtilde, K, direction = NULL) {
 
   sv  <- svd(Xtilde, nu = K, nv = K)
-  U   <- sv$u                            # P × K
+  U   <- sv$u                            # P x K
   S   <- sv$d[seq_len(K)]               # K singular values
-  V   <- sv$v                            # I × K
+  V   <- sv$v                            # I x K
 
-  ## Core-profile (scale) matrix  X = V Σ
+  ## Core-profile (scale) matrix  X = V Sigma
   X   <- V %*% diag(S, nrow = K)
 
   ## Sign normalisation: flip so largest-abs element per column is positive
@@ -110,7 +112,7 @@ fapa_core <- function(Xtilde, K, direction = NULL) {
   prop_var  <- var_k / total_var
   cum_var   <- cumsum(prop_var)
 
-  ## Normalised person–core correlations
+  ## Normalised person-core correlations
   prof_norms <- sqrt(rowSums(Xtilde^2))
   person_cor <- sweep(U * rep(S, each = nrow(U)), 1,
                       pmax(prof_norms, .Machine$double.eps), "/")

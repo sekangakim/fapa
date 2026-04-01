@@ -14,7 +14,8 @@ fapa_person(
 )
 }
 \arguments{
-\item{Xtilde}{Numeric matrix (persons × variables), already ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), already
+ipsatized.}
 
 \item{fit}{A list returned by \code{\link{fapa_core}}.}
 
@@ -24,7 +25,8 @@ are desired, or \code{NULL} to skip individual inference.}
 \item{B_boot}{Integer. Bootstrap replicates for participant CIs.
 Default \code{2000}.}
 
-\item{alpha}{Numeric. Two-tailed significance level. Default \code{0.05}.}
+\item{alpha}{Numeric. Two-tailed significance level. Default
+\code{0.05}.}
 
 \item{seed}{Integer or \code{NULL}. Random seed.}
 }
@@ -43,6 +45,6 @@ A named list:
 \description{
 Projects each person onto the retained core profiles, returning
 reconstruction \eqn{R^2}, pattern weights \eqn{\mathbf{u}_p}, and
-normalised person--core correlations.  Optionally computes percentile
+normalised person-core correlations.  Optionally computes percentile
 bootstrap confidence intervals for pattern weights of selected participants.
 }

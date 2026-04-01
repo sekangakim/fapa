@@ -50,9 +50,10 @@ workflow:
   \item Lorenzo-Seva, U., & ten Berge, J. M. F. (2006). Tucker's
     congruence coefficient as a meaningful index of factor similarity.
     \emph{Methodology, 2}(2), 57--64.
-  \item Kim, S.-K. (2023). Factorization of person response profiles
+  \item Kim, S.-K. (2024). Factorization of person response profiles
     to identify summative profiles carrying central response patterns.
-    \emph{Psychological Methods}. \doi{10.1037/met0000568}
+    \emph{Psychological Methods, 29}(4), 723--730.
+    \doi{10.1037/met0000568}
 }
 }
 

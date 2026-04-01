@@ -6,13 +6,13 @@
 #' and 11 post-treatment administrations of the Eating Disorder Inventory-2
 #' (EDI-2) subscales.
 #'
-#' @format A data frame with 500 rows and 22 variables:
-#' \describe{
-#'   \item{Before_1_Dt \ldots Before_11_Si}{Pre-treatment EDI-2 subscale
-#'     scores (Drive for Thinness through Social Insecurity).}
-#'   \item{After_12_Dt \ldots After_22_Si}{Post-treatment EDI-2 subscale
-#'     scores.}
-#' }
+#' @format A data frame with 500 rows and 22 columns.  The first 11 columns
+#'   contain pre-treatment EDI-2 subscale scores (Drive for Thinness through
+#'   Social Insecurity) and the remaining 11 columns contain the corresponding
+#'   post-treatment scores.  Column names follow the convention
+#'   \code{Before_<n>_<abbr>} and \code{After_<n>_<abbr>}, where \code{n} is
+#'   the subscale index and \code{abbr} is a two-letter abbreviation.
+#'   Scores are integers in the range 0--40.
 #'
 #' @details
 #' The 11 EDI-2 subscales are:
@@ -30,9 +30,9 @@
 #'   \item \strong{Si} Social Insecurity
 #' }
 #'
-#' Scores are integers in the range 0--40.  The latent structure was
-#' constructed to approximate two components: a normative symptom gradient
-#' (CP1) and a pre-/post-treatment change contrast (CP2).
+#' The latent structure was constructed to approximate two components: a
+#' normative symptom gradient (CP1) and a pre-/post-treatment change contrast
+#' (CP2).
 #'
 #' @source Simulated. See \code{data-raw/simulate_fapa_data.R}.
 #'

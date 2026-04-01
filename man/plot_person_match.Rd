@@ -9,7 +9,7 @@ plot_person_match(bca, Xtilde, p = 1, K = 2)
 \arguments{
 \item{bca}{A list returned by \code{\link{fapa_bca}}.}
 
-\item{Xtilde}{Numeric matrix (persons × variables), ipsatized.}
+\item{Xtilde}{Numeric matrix (persons \eqn{\times} variables), ipsatized.}
 
 \item{p}{Integer. Row index of the focal person. Default \code{1}.}
 

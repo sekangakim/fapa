@@ -32,7 +32,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 URL: https://github.com/sekangakim/FAPA
 BugReports: https://github.com/sekangakim/FAPA/issues

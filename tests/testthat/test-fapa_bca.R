@@ -47,7 +47,10 @@ test_that(".align_signs corrects sign flips", {
   set.seed(4)
   I <- 10;  K <- 2
   X0 <- matrix(rnorm(I * K), I, K)
-  Xb <- X0 * c(1, -1)               # flip second column
+  ## Use matrix multiplication to flip the second column only.
+  ## Note: X0 * c(1, -1) is WRONG — it recycles element-wise in
+  ## column-major order, producing alternating-row flips, not a column flip.
+  Xb <- X0 %*% diag(c(1, -1))       # correctly flips second column
 
   Xb_aligned <- FAPA:::.align_signs(X0, Xb)
   expect_equal(Xb_aligned, X0, tolerance = 1e-12)

@@ -17,8 +17,9 @@
 #' @return \code{Xb} with columns sign-aligned to \code{X0}.
 #' @keywords internal
 .align_signs <- function(X0, Xb) {
-  for (k in seq_len(ncol(X0)))
-    if (sum(X0[, k] * Xb[, k]) < 0) Xb[, k] <- -Xb[, k]
+  for (k in seq_len(ncol(X0))) {
+    if (sum(X0[, k] * Xb[, k]) < 0L) Xb[, k] <- -Xb[, k]
+  }
   Xb
 }
 
@@ -33,7 +34,8 @@
 #' function via an inner-product alignment rule (see \code{.align_signs}),
 #' ensuring that each bootstrap distribution is unimodal before BCa adjustment.
 #'
-#' @param Xtilde Numeric matrix (persons × variables), already ipsatized.
+#' @param Xtilde Numeric matrix (persons \eqn{\times} variables), already
+#'   ipsatized.
 #' @param K      Integer. Number of core profiles (must equal the retained
 #'   dimensionality from \code{\link{fapa_pa}}).
 #' @param B      Integer. Number of bootstrap replicates. Default \code{2000}.
@@ -47,7 +49,8 @@
 #'       \code{Upper}, \code{BCaLower}, \code{BCaUpper}.}
 #'     \item{X0}{Original core-profile matrix (\eqn{I \times K}).}
 #'     \item{boot_out}{The full \code{boot} object for downstream diagnostics.}
-#'     \item{boot_X}{3-D array (\eqn{B \times I \times K}) of bootstrap profiles.}
+#'     \item{boot_X}{3-D array (\eqn{B \times I \times K}) of bootstrap
+#'       profiles.}
 #'     \item{K, B, alpha, varnames}{Inputs echoed for plotting and output.}
 #'   }
 #'
@@ -61,12 +64,12 @@
 #' @export
 fapa_bca <- function(Xtilde, K, B = 2000, alpha = 0.05, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
-  I <- ncol(Xtilde)
+  n_vars <- ncol(Xtilde)                      # number of variables (I)
 
   fit0 <- fapa_core(Xtilde, K)
-  X0   <- fit0$X                              # I × K original core profiles
+  X0   <- fit0$X                              # n_vars x K original core profiles
 
-  ## Statistic: returns aligned core profiles as a flat vector (length I*K)
+  ## Statistic: returns aligned core profiles as a flat vector (length n_vars*K)
   fapa_stat <- function(data, indices) {
     Xb <- fapa_core(data[indices, , drop = FALSE], K)$X
     as.vector(.align_signs(X0, Xb))
@@ -76,7 +79,7 @@ fapa_bca <- function(Xtilde, K, B = 2000, alpha = 0.05, seed = NULL) {
 
   la      <- alpha / 2
   ua      <- 1 - alpha / 2
-  n_stats <- I * K
+  n_stats <- n_vars * K
 
   bca_lo  <- numeric(n_stats);  bca_hi  <- numeric(n_stats)
   boot_mn <- numeric(n_stats);  boot_se <- numeric(n_stats)
@@ -92,18 +95,18 @@ fapa_bca <- function(Xtilde, K, B = 2000, alpha = 0.05, seed = NULL) {
       bca_hi[idx] <- ci$bca[5]
     } else {
       ## Fallback to percentile when BCa cannot be computed
-      bca_lo[idx] <- quantile(boot_out$t[, idx], la, na.rm = TRUE)
-      bca_hi[idx] <- quantile(boot_out$t[, idx], ua, na.rm = TRUE)
+      bca_lo[idx] <- stats::quantile(boot_out$t[, idx], la, na.rm = TRUE)
+      bca_hi[idx] <- stats::quantile(boot_out$t[, idx], ua, na.rm = TRUE)
     }
-    boot_mn[idx] <- mean(boot_out$t[, idx],     na.rm = TRUE)
-    boot_se[idx] <- sd(boot_out$t[, idx],        na.rm = TRUE)
-    pct_lo[idx]  <- quantile(boot_out$t[, idx], la, na.rm = TRUE)
-    pct_hi[idx]  <- quantile(boot_out$t[, idx], ua, na.rm = TRUE)
+    boot_mn[idx] <- mean(boot_out$t[, idx],                    na.rm = TRUE)
+    boot_se[idx] <- stats::sd(boot_out$t[, idx],               na.rm = TRUE)
+    pct_lo[idx]  <- stats::quantile(boot_out$t[, idx], la,     na.rm = TRUE)
+    pct_hi[idx]  <- stats::quantile(boot_out$t[, idx], ua,     na.rm = TRUE)
   }
 
   ci_list <- vector("list", K)
   for (k in seq_len(K)) {
-    idx_k <- seq_len(I) + (k - 1L) * I
+    idx_k <- seq_len(n_vars) + (k - 1L) * n_vars
     ci_list[[k]] <- data.frame(
       Ori      = X0[, k],
       Mean     = boot_mn[idx_k],
@@ -119,7 +122,7 @@ fapa_bca <- function(Xtilde, K, B = 2000, alpha = 0.05, seed = NULL) {
   list(ci       = ci_list,
        X0       = X0,
        boot_out = boot_out,
-       boot_X   = array(boot_out$t, dim = c(B, I, K)),
+       boot_X   = array(boot_out$t, dim = c(B, n_vars, K)),
        K        = K,
        B        = B,
        alpha    = alpha,
