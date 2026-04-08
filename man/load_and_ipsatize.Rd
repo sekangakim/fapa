@@ -27,8 +27,12 @@ each person's mean across variables (ipsatization), isolating within-person
 pattern structure from overall profile elevation.
 }
 \examples{
-\dontrun{
-dat <- load_and_ipsatize("Calibration.csv", col_labels = paste0("V", 1:22))
-}
+## Create a small temporary CSV and ipsatize it
+tmp <- tempfile(fileext = ".csv")
+write.csv(matrix(sample(1:5, 30, replace = TRUE), nrow = 6),
+          tmp, row.names = FALSE)
+dat <- load_and_ipsatize(tmp, col_labels = paste0("V", 1:5))
+round(rowSums(dat$ipsatized), 10)  # should all be 0
+unlink(tmp)
 
 }
